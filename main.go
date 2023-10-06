@@ -48,7 +48,11 @@ func main() {
 		spritesheetData := spritesheetDatas[i]
 
 		err = resourceFile.Update(func(tx *bolt.Tx) error {
-			buck := tx.Bucket([]byte("spritesheets"))
+			buck, err := tx.CreateBucketIfNotExists([]byte("spritesheets"))
+
+			if err != nil {
+				return err
+			}
 
 			if buck == nil {
 				return fmt.Errorf("no spritesheets bucket present")
@@ -68,6 +72,7 @@ func main() {
 
 			return nil
 		})
+		handleError(err)
 	}
 }
 
